@@ -16,21 +16,42 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## PII Handling
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+For the purposes of this exercise I considered SSN to be the primary PII field.  Name/Email/Phone can also be considered PII in many cases but were not the focus of this exercise.
 
-## Learn More
+I made sure no PII was sent in the handoff record, instead sending applicationId which can be used to link back to the user when needed.
 
-To learn more about Next.js, take a look at the following resources:
+The SSN was hashed with the last 4 being stored in plain text inside the "store" (in this case an in-memory Map). The full, plain-text SSN is never returned, stored or passed around.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Needed Extras in a production enviroment:
+  * In an attempt not to over engineer these steps are not implemented but should be in a production enviroment
+  * A lint or pre-commit hook that prevents the committing of console.log statements.
+  * A log library will be used for all logging. This can be configured to always strip out certain fields. While not foolproof, this is a strong step to keeping info from leaking in logs.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Business Rules and Handoff
 
-## Deploy on Vercel
+Business rules are handled inside the evaluteApplication function. Right now this function is hard-coded checks for the given business rules.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Given more time I would want to build this out to a more robust "rules engine" powered by a config file that would look similiar to:
+```
+[{
+   "field": "amountRequested",
+    "compare": "gt",
+    "value": 1000,
+    "flagsToAdd": ["AMOUNT_OVER_THE_LIMIT"]
+},
+{
+  "field": "ssn|length",
+  "compare": "eq",
+   "value": 9,
+  "flagsToAdd": ["SUSPICIOUS_SSN_PATTERN"]
+}
+]
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+These would allow for the building of a UI to edit the config, allowing for easily changing the triage rules in realtime. The current setup requires a developer to manual write the new rules.
+
+## AI Tool Usage
+
+AI was used in the initial setup using Warp.ai. The prompt was "scaffold me a next.js app with the latest 2026 features. Keep it very minimal with only one page and no api routes".  I then confirmed the folder was structured the way I expected and began.

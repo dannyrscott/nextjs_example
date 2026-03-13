@@ -4,6 +4,8 @@ import { useState } from "react"
 
 export default function ApplyPage() {
   const [form, setForm] = useState<any>({})
+  const [response, setResponse] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const handleChange = (e:any) => {
     setForm({
@@ -14,19 +16,31 @@ export default function ApplyPage() {
 
   const submit = async (e:any) => {
     e.preventDefault()
+setError(null)
+    setResponse(null)
 
-    const res = await fetch("/api/applications", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": "dev-key"
-      },
-      body: JSON.stringify(form)
-    })
+    try {
+      const res = await fetch("/api/applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": "dev-key"
+        },
+        body: JSON.stringify(form)
+      })
 
-    const data = await res.json()
+      const data = await res.json()
 
-    alert(`Application ID: ${data.applicationId}`)
+      if (!res.ok) {
+        setError(data.error || "Submission failed")
+        return
+      }
+
+      setResponse(data)
+
+    } catch (err) {
+      setError("Network error")
+    }
   }
 
   return (
@@ -70,6 +84,30 @@ export default function ApplyPage() {
       <br/>
       <button type="submit">Submit</button>
     </form>
+    {error && (
+        <div style={{ marginTop: 20, color: "red" }}>
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+    {response && (
+        <div style={{ marginTop: 20 }}>
+          <h3>Application Submitted</h3>
+
+          <p><strong>Application ID:</strong> {response.applicationId}</p>
+          <p><strong>Review Tier:</strong> {response.reviewTier}</p>
+
+          {response.riskFlags?.length > 0 && (
+            <>
+              <p><strong>Risk Flags:</strong></p>
+              <ul>
+                {response.riskFlags.map((flag: string) => (
+                  <li key={flag}>{flag}</li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }

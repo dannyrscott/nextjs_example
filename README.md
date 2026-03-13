@@ -28,6 +28,7 @@ Needed Extras in a production enviroment:
   * In an attempt not to over engineer these steps are not implemented but should be in a production enviroment
   * A lint or pre-commit hook that prevents the committing of console.log statements.
   * A log library will be used for all logging. This can be configured to always strip out certain fields. While not foolproof, this is a strong step to keeping info from leaking in logs.
+  * The UI currently displays the default error messages from Zod when the API fails validation. This could easily leak information and each field should have a specific message and the full output to the UI should be processed to be cleaned.
 
 ## Business Rules and Handoff
 

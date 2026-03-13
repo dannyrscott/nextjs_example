@@ -20,7 +20,7 @@ export function evaluateApplication(app: ApplicationRecord): TriageResult {
 
   const ssn = app.ssn.replace(/-/g, "")
 
-  if (/^(\d)\1{8}$/.test(ssn)) {
+  if (ssn.length !== 9) {
     flags.push("SUSPICIOUS_SSN_PATTERN")
   }
 

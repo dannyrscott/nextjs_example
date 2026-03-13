@@ -6,7 +6,7 @@ export const applicationSchema = z.object({
     email: z.string().email(),
     phone: z.string(),
     dateOfBirth: z.string(),
-    ssn: z.string(),
+    ssn: z.string().transform(s => s.replace(/\D/g, '') ),
     address1: z.string(),
     address2: z.string().optional(),
     city: z.string(),

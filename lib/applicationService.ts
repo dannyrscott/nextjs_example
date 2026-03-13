@@ -12,8 +12,7 @@ export function submitApplication(input: any) {
     applicationId: randomUUID(),
     createdAt: new Date().toISOString()
   }
-
-  console.log(application)
+  
   store.saveApplication(application)
 
   const triage = evaluateApplication(application)

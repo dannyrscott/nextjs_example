@@ -20,9 +20,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(result)
 
   } catch (err:any) {
-    console.log(err)
     return NextResponse.json(
-      { error: "Invalid application data" },
+      { error: err.message ||  "Invalid application data" },
       { status: 400 }
     )
   }

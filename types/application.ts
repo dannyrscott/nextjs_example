@@ -5,6 +5,7 @@ export type ApplicationInput = {
     phone: string
     dateOfBirth: string
     ssn: string
+    ssn_last_four?: string
     address1: string
     address2?: string
     city: string
